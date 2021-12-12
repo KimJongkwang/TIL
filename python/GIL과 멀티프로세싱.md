@@ -1,4 +1,4 @@
-# GIL(Global Interpreter Lock, 전역 인터프리터 잠금)
+## GIL(Global Interpreter Lock, 전역 인터프리터 잠금)
 
 멀티 스레딩은 스레드끼리 자원을 공유하는데, 하나의 자원을 동시에 여러 스레드가 가져가는 상황에서 충돌이 발생할 수 있다.
 
@@ -6,7 +6,7 @@
 
 이러한 이유로 파이썬에서는 GILGlobal Interpreter Lock, 전역 인터프리터 잠금)를 도입하였다.
 
-## GIL 이란?
+### GIL 이란?
 
 한 번에 1개의 스레드만 유지하는 락이며, 하나의 스레드가 다른 스레드를 차단해서 제어를 얻는 것을 막아준다.
 
@@ -16,7 +16,7 @@
 
 단, Network I/O bound 코드에서는 멀티스레딩을 유의미하게 사용할 수 있다.
 
-## 멀티 프로세싱(multi processing)
+### 멀티 프로세싱(multi processing)
 
 GIL 정책에 의해서 CPU bound 코드에서는 멀티 스레딩에 제한이 있다. 멀티 프로세싱은 CPU bound 코드에서도 병렬성을 지원한다.
 
