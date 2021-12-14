@@ -30,8 +30,6 @@ GIL 정책에 의해서 CPU bound 코드에서는 멀티 스레딩에 제한이 
 import time
 import os
 import threading
-from concurrent.futures import ThreadPoolExecutor
-from concurrent.futures import ProcessPoolExecutor
 
 # nums = [50, 63, 32]
 nums = [30] * 100
@@ -72,6 +70,8 @@ def main():
 ##### Multi Thread
 
 ```python
+from concurrent.futures import ThreadPoolExecutor
+
 def main():
     executor = ThreadPoolExecutor(max_workers=10)
     results = list(executor.map(cpu_bound_func, nums))
@@ -92,10 +92,11 @@ def main():
 앞서 언급한 것과 같이 CPU bound 상황에서는 멀티스레딩으로 병렬처리를 하더라도 의미가 없다.
 
 ##### Multi Process
+from concurrent.futures import ProcessPoolExecutor
 
 ```python
 def main():
-    executor = ThreadPoolExecutor(max_workers=10)
+    executor = ProcessPoolExecutor(max_workers=10)
     results = list(executor.map(cpu_bound_func, nums))
     return results
 ```
