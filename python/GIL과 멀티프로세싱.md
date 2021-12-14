@@ -92,9 +92,9 @@ def main():
 앞서 언급한 것과 같이 CPU bound 상황에서는 멀티스레딩으로 병렬처리를 하더라도 의미가 없다.
 
 ##### Multi Process
+```python
 from concurrent.futures import ProcessPoolExecutor
 
-```python
 def main():
     executor = ProcessPoolExecutor(max_workers=10)
     results = list(executor.map(cpu_bound_func, nums))
