@@ -1,11 +1,18 @@
 import os
 import time
 import sys
-import aiohttp
 import asyncio
+import aiohttp
 import aiofiles
 
 from config import get_secret # json KEY loader
+
+"""
+env: python3.7, aiohttp: 3.7.3, aiofiles: 0.7.0
+
+execute: python3 download_image_naverapi.py "keyword" "Number of Pages"
+"""
+
 
 async def img_downloader(session, img):
     img_name = img.split('/')[-1].split('?')[0]
