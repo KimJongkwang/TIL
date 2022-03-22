@@ -1,50 +1,44 @@
-### Node
-# - item : 초기 속성값
-# - pointer : next Node
-### Linked List
-# head: first item
-# length: property length
-### Stack
-# push
-# pop
+from typing import Optional, Generic, TypeVar
+
+T = TypeVar("T")
 
 
-
-from typing import Optional
-
-class Node:
-    def __init__(
-        self,
-        item,
-        pointer: Optional["Node"] = None
-        ) -> None:
+class Node(Generic[T]):
+    def __init__(self, item: T, pointer: Optional["Node"] = None):
         self.item = item
-        self.pointer: Optional["Node"] = pointer
-
-    def __str__(self):
-        return f"현재 {self.item}과 {self.pointer}"
+        self.pointer = pointer
 
 
-class LinkedList:
-    def __init__(self) -> None: 
-        self.head: Optional["Node"] = None
+class LinkedList(Generic[T]):
+    def __init__(self):
+        self.head: Optional[Node[T]] = None
 
     @property
     def length(self) -> int:
         if self.head is None:
             return 0
-        cur_node: Node = self.head
+        cur_node = self.head
         count: int = 1
         while cur_node.pointer is not None:
             cur_node = cur_node.pointer
             count += 1
         return count
 
+    def __str__(self) -> str:
+        result: str = ""
+        if self.head is None:
+            return result
+        cur_node = self.head
+        result += f"{cur_node.item}"
+        while cur_node.pointer is not None:
+            cur_node = cur_node.pointer
+            result += f", {cur_node.item}"
+        return result
 
-class Stack(LinkedList):
 
-    def push(self, data) -> None:
-        new_node: Node = Node(item=data)
+class Stack(Generic[T], LinkedList[T]):
+    def push(self, item: T) -> None:
+        new_node: Node[T] = Node[T](item=item)
         if self.head is None:
             self.head = new_node
             return
@@ -69,9 +63,9 @@ class Stack(LinkedList):
 
 if __name__ == "__main__":
     stack = Stack()
-    stack.push(5)
-    stack.push(7)
+    stack.push(12)
+    stack.push(2)
+    stack.push(3)
     stack.push(4)
-    print(stack.head.__dict__)
-    print(stack.head.item)
     print(stack.length)
+    print(stack)
