@@ -13,3 +13,5 @@
 - 해결은 간단하다. vi 편집기를 binary 모드(-b)로 실행하여 붙어있는 ^M를 제거해준다.
 
 `vi -b file.sh`
+
+> http://chomman.github.io/blog/linux/binshm-bad-interpreter-no-such-file-or-directory-%EC%98%A4%EB%A5%98-%EB%B0%9C%EC%83%9D-%EC%8B%9C/
