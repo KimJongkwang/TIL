@@ -9,6 +9,19 @@ psql -p {port} -U {database}
 \dt
 ```
 
+### 세션 현황 조회
+
+- query
+
+```sql
+select * from pg_stat_activity where datname='{db_name}';
+```
+- 현재 연결된 세션정보 조회
+- state 에서 세션상태 확인
+    - idle: 세션은 있으나, 쿼리 실행전
+    - active: 쿼리 실행 상태
+    
+
 ### DESC; -> column 조회
 
 - query

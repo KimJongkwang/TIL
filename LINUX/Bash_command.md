@@ -113,3 +113,14 @@ $ echo ${DATE:4:2}
 #!/bin/bash
 
 ````
+
+- 문자 시간 증가, 감소
+
+```bash
+$ DATETIME=2022010100
+$ DATE=${DATETIME:0:8}  # 20220101
+$ HH=${DATETIME:9:2}  # 00
+
+$ echo `date -d "$DD $HH -1hour" +%Y%m%d%H`
+2021123123
+```
