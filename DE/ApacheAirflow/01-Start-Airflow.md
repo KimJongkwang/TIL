@@ -67,3 +67,83 @@ Airflow 설치 이후에는 Airflow의 meta db를 초기화 해주어야 한다.
 ![image](D:\JK\git-repo\TIL\DE\ApacheAirflow\Inkedairflow.cfg수정.png_LI.jpg)
 
 이 외에도 샘플 task를 보지 않으려면 `load_examples = True`를 `False`로 변경하면 된다.
+
+3. Simple DAG 만들기
+
+DAG는 Directed Acyclic Graph(비 순환 그래프)로 말그대로 순환되지 않는 구조를 일컫는다.
+
+예를 들어 A -> B -> C 각각이 종속적일 때 동작하며, A -> B -> A -> C 는 DAG 개념에서 벗어난 개념이다.
+
+단, A -> B -> C, A -> C -> D 와 같이 트리가 꾸려지더라도 종속적으로 동작할 수 있다면 가능하다.
+
+##### Default Arguments
+
+default args는 각 DAG마다 정의한 Operator에 전달하는 기본 arguments들을 정의해놓은 것이다.
+자주 사용되는 파라미터는 아래와 같다.
+
+```python
+default_args = {
+    'owner': 'Airflow' # 각 테스크의 owner. linux username이 추천됨
+    'start_date': datetime(2016, 1, 1), # 작업이 시작될 날짜
+    'end_date': datetime(2016, 2, 1), # 이 날짜 이후로는 작업을 시행하지 않음
+    'retries': 1, # 최대 재시도 횟수
+    'retry_delay': timedelta(minutes=5), # 재시도 간 딜레이
+    'depends_on_past': False, # true일 경우, 이전 분기 작업이 성공해야만 작업을 진행
+    'on_failure_callback':some_function(), # task가 실패했을 경우 호출할 함수, dictype의 context를 전달.
+    'on_retry_callback':some_function2(), # 재시도시, 상동
+    'on_success_callback':some_function3(), # 성공시, 상동
+    'priority_weight': 10, # 이 테스크의 우선순위 가중치, 높을 수록 먼저 triggered
+}
+
+dag = DAG('my_dag', default_args=default_args)
+op = DummyOperator(task_id='dummy', dag=dag)
+print(op.owner) # Airflow
+```
+
+##### Scope
+
+Airflow는 DAGfile 의 모든 DAG 오브젝트를 불러올 수 있다. 다만 각 오브젝트는 전역변수이어야 한다.
+
+##### Operator
+
+Operator는 일반적으로 독립적으로 동작하기 때문에, 자원을 공유할 필요가 없다. DAG는 독립적으로 실행 순서만 지켜주면 된다. 만일 두 Operator가 파일, 데이터를 소량으로 공유해야할 경우에는 하나의 Operator로 합칠 수 있다. 또는 Airflow가 지원하는 XCom 기능을 활용 할 수 있다.
+
+XCom은 추후에 필요시 알아보도록 하겠다.
+
+Operator의 종류는 정말 많다. 그 중에 주로 사용되는 Operator들은 아래와 같다.
+
+- bash, python, mysql, jdbc, hive, spark 등
+
+##### Task
+
+Operator가 인스턴스로 쓰이게 되면 Task라고 한다. 각각의 Task들은 DAG 그래프를 보았을 때 노드가 된다.
+
+#### Error 모음
+
+> Some workers seem to have died and gunicorn did not restart them as expected
+
+- 해결
+
+로그를 살펴보니, Airflow의 웹 인터페이스를 담당하는 gunicorn worker들이 정상적으로 실행되지 않았고, 이로 인해 웹 서버 자체가 사망하는 일이 발생했습니다. 설정이나 ECS task definition을 봐도 딱히 잘못된 부분이 없어보여서 조금 헤맸는데, 약간 살펴본 결과 메모리가 부족해서 생기는 문제였습니다. 웹 서버 container에 350MiB를 할당하고, gunicorn worker 수는 기본 설정값대로 4개를 사용 중이었는데 혹시나 해서 worker 개수를 3으로 줄이니 정상 실행되는 것을 확인할 수 있었습니다.
+
+참고로, gunicorn worker 수는 airflow.cfg의 다음 섹션에서 찾으실 수 있습니다.
+
+```cfg
+[webserver]
+# Number of workers to run the Gunicorn web server
+workers = n
+```
+
+> don't connect scheduler port "0.0.0.0:8078"
+
+- 해결
+
+스케쥴러가 포트에 연결이 되지 않는다. 이전 서버를 데몬으로 실행시키면서 종료시킬 때 마스터를 종료시키고, 하위의 노드 프로세스들을 제거하지 않은 상태로 다시 서버를 재실행시킬 때 발생하였다.
+
+모든 프로세스들을 kill 하고 난 후에 재실행하였을 때 문제없이 실행되었다.
+
+```bash
+kill -9 `ps aux | grep airflow | awk '{print $2}'` # airflow 전체
+kill -9 $(ps -ef | grep "airflow scheduler" | awk '{print $2}') # scheduler
+kill -9 $(ps -ef | grep "gunicorn" | awk '{print $2}') # gunicorn ## 주의 혹시나 실행 중인 gunicorn 서버가 있다면 실행하면 안됨.
+```
