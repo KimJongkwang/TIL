@@ -36,10 +36,11 @@ WHERE table_schema = '{schema}'
 
 ```sql
 with tableinfo as (
-	select    c.relname as table_name
-            , obj_description(c.oid) table_comment
-            , a.attname  as column_name
-            , (select col_description(a.attrelid, a.attnum)) as column_comment
+	select
+			 c.relname as table_name
+		   , obj_description(c.oid) table_comment
+		   , a.attname  as column_name
+	       , (select col_description(a.attrelid, a.attnum)) as column_comment
 	from
 	    pg_catalog.pg_class c
 	    inner join pg_catalog.pg_attribute a on a.attrelid = c.oid
@@ -50,15 +51,17 @@ with tableinfo as (
 	order by a.attrelid, a.attnum
 	)
 select    a.table_name
-        , b.table_comment
-        , a.column_name
-        , udt_name dtype
-        , character_maximum_length
-        , is_nullable
-        , column_default
+		, b.table_comment
+		, b.column_name
+		, udt_name dtype
+		, character_maximum_length
+		, is_nullable
+		, column_default
+		, b.column_comment
 from information_schema.columns as a
-left outer join tableinfo as b on a.table_name = b.table_name
-where table_schema = 'public';
+left join tableinfo as b on a.table_name = b.table_name and a.column_name = b.column_name
+where table_schema = 'public'
+order by 1, 3;
 ```
 
 - psql
