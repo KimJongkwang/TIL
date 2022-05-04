@@ -37,9 +37,9 @@ WHERE table_schema = '{schema}'
 ```sql
 with tableinfo as (
 	select    c.relname as table_name
-          , obj_description(c.oid) table_comment
-          , a.attname  as column_name
-	        , (select col_description(a.attrelid, a.attnum)) as column_comment
+            , obj_description(c.oid) table_comment
+            , a.attname  as column_name
+            , (select col_description(a.attrelid, a.attnum)) as column_comment
 	from
 	    pg_catalog.pg_class c
 	    inner join pg_catalog.pg_attribute a on a.attrelid = c.oid
