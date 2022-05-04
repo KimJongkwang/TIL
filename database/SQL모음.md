@@ -16,11 +16,11 @@ psql -p {port} -U {database}
 ```sql
 select * from pg_stat_activity where datname='{db_name}';
 ```
+
 - 현재 연결된 세션정보 조회
 - state 에서 세션상태 확인
-    - idle: 세션은 있으나, 쿼리 실행전
-    - active: 쿼리 실행 상태
-    
+  - idle: 세션은 있으나, 쿼리 실행전
+  - active: 쿼리 실행 상태
 
 ### DESC; -> column 조회
 
@@ -30,6 +30,35 @@ select * from pg_stat_activity where datname='{db_name}';
 SELECT * FROM information_schema.columns
 WHERE table_schema = '{schema}'
     AND table_name = '{table}';
+```
+
+- 테이블 코멘트와 컬럼정보
+
+```sql
+with tableinfo as (
+	select    c.relname as table_name
+          , obj_description(c.oid) table_comment
+          , a.attname  as column_name
+	        , (select col_description(a.attrelid, a.attnum)) as column_comment
+	from
+	    pg_catalog.pg_class c
+	    inner join pg_catalog.pg_attribute a on a.attrelid = c.oid
+	where
+	    a.attnum > 0
+	    and a.attisdropped is false
+	    and pg_catalog.pg_table_is_visible(c.oid)
+	order by a.attrelid, a.attnum
+	)
+select    a.table_name
+        , b.table_comment
+        , a.column_name
+        , udt_name dtype
+        , character_maximum_length
+        , is_nullable
+        , column_default
+from information_schema.columns as a
+left outer join tableinfo as b on a.table_name = b.table_name
+where table_schema = 'public';
 ```
 
 - psql
