@@ -4,6 +4,32 @@ shell_scripts.sh 에서 .sh 를 통해 쉘스크립트 선언
 
 최상단 `#!/bin/bash` `#!/bin/csh` `#!/bin/tcsh` 등 사용할 쉘 선언해준다.
 
+## String operator
+
+### cut
+
+- 기본 구문
+
+```bash
+$ string="abc"
+$ echo $string | cut -c 1-2  # -c : 문자열 N-M 만큼 커팅
+ab
+$ string="010-1234-4567"
+$ echo $string | cut -d "-" -f 1  # -d delimiter : 구분자 기준 커팅
+010
+$ echo $string | cut -d "-" -f 2  # -f delimiter로 만들어진 리스트의 인덱스번호
+1234
+```
+
+## file
+
+### sort
+
+```bash
+$ sort myfile.txt # 정렬
+$ sort -u myfile.txt # 유니크 정렬
+```
+
 ## Statements
 
 ### If statement
@@ -35,6 +61,12 @@ if (( "$a" <= "$b" ))
 if [ "$a" -ge "$b" ] : 크거나 같음(greater than or equal to)
 if (( "$a" >= "$b" ))
 
+# string comparison
+if [ "$a" == "$b" ]  : 같음(equal to)
+if [ "$a" = "$b" ] ※ = 양쪽 모두 빈 칸 이여야 함
+if [ "$a" != "$b" ]  : 다름(not equal to)
+if [ -z "$a" ] : string 이 null 이 아님(즉, 0이 아닌 길이가 있는 string)
+
 # If statement  Logical AND, OR 문법
 if [[ condition1 && condition2 ]] : Logical AND
 if [ condition1 ] && [ condition2 ]
@@ -64,14 +96,20 @@ TBC
 ## script.sh
 #!/bin/bash
 
+VAR0=$0  # $0을 넣으면 실행한 스크립트명
 VAR1=$1
 VAR2=$2
 VAR3=$3
+VAR_ALL=$*  # 입력인자 모두
 
+echo $VAR0
 echo $VAR1 $VAR2 $VAR3
+echo $VAR_ALL
 
 ##
 [user@ ~]$ ./sciprt.sh 111 222 333
+./script.sh
+111 222 333
 111 222 333
 ```
 
