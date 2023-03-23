@@ -24,3 +24,24 @@ cat /var/log/cron # 크론 로그
 # 가장 중요한 것! 항상 크론을 수정하면, 재가동 필수!
 service crond restart
 ```
+
+### history
+
+- history: 최근 입력 커맨드를 보여줌
+
+```bash
+$ history
+1 2023-03-01 00:00:00 cd ~
+2 2023-03-01 00:00:10 ls
+3 2023-03-01 00:00:20 history
+...
+```
+
+- history 삭제
+
+```bash
+# 전체 삭제
+$ history -c
+# 부분 삭제
+$ history -d {line number}
+```
