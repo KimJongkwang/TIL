@@ -1,8 +1,10 @@
 # Bash Script
 
-shell_scripts.sh 에서 .sh 를 통해 쉘스크립트 선언
+## SheBang(#!)
 
-최상단 `#!/bin/bash` `#!/bin/csh` `#!/bin/tcsh` 등 사용할 쉘 선언해준다.
+- SheBang(#!) : 최상단 `#!/bin/bash` `#!/bin/csh` `#!/bin/tcsh` 등 사용할 쉘 선언
+- `#! {interpreter} [optional-arg]` : interpreter는 절대경로로 지정
+- 단 `#!/usr/bin/env python` 등의 경우 python 버전이 명시되지 않았지만, 현재 환경에서의 python 위치를 찾음(python 외로도 가능)
 
 ## String operator
 
@@ -100,17 +102,32 @@ VAR0=$0  # $0을 넣으면 실행한 스크립트명
 VAR1=$1
 VAR2=$2
 VAR3=$3
-VAR_ALL=$*  # 입력인자 모두
+VAR_ALL=$*  # 입력인자 모두(문자열)
+VAR_SHARP=$#  # 입력인자의 갯수
+VAR_AT=$@  # 입력자를 모두 반환($1 ... $N)
+VAR_QUESTIONMARK=$?  # 마지막 쉘 명령어의 종료 상태
+VAR_UNDERSCORE=$_  # 마지막 반환 값을 반환
+VAR_DOLLAR=$$  # 해당 명령어의 프로세스 ID
 
 echo $VAR0
 echo $VAR1 $VAR2 $VAR3
 echo $VAR_ALL
+echo $VAR_SHARP
+echo $VAR_AT
+echo $VAR_QUESTIONMARK
+echo $VAR_UNDERSCORE
+echo $VAR_DOLLAR
 
 ##
 [user@ ~]$ ./sciprt.sh 111 222 333
-./script.sh
-111 222 333
-111 222 333
+./script.sh  # $0
+111 222 333  # $1 $2 $3
+111 222 333  # $* (문자열)
+3            # $#
+111 222 333  # $@
+0            # $?
+0            # $_  앞선 $? 출력이 0이기 때문
+9900         # $$
 ```
 
 다른 변수를 넣을 수도 있다.
@@ -129,7 +146,7 @@ $ date
 Wed Mar  2 17:35:38 KST 2022  # KST, UTC 시스템 시간에 따라 다름
 ```
 
-시스템 시간 설정은 [basic-command](https://github.com/KimJongkwang/TIL/blob/main/LINUX/basic-command.md)에 작성하였다.
+시스템 시간 설정은 [basic-command](https://github.com/KimJongkwang/TIL/blob/main/LINUX/basic-command.md)에 작성
 
 #### `date` 포맷팅
 
@@ -162,3 +179,7 @@ $ HH=${DATETIME:9:2}  # 00
 $ echo `date -d "$DD $HH -1hour" +%Y%m%d%H`
 2021123123
 ```
+
+## timeout
+
+TBC
